@@ -19,10 +19,10 @@ int main(int argc, char * const argv[]) {
     struct sockaddr_in address;
     memset(&address, 0, sizeof(address));
     address = initSocketAddr(AF_INET, 27015, INADDR_ANY); // Initializing socket address
-    int socket1 = createSocket(AF_INET, SOCK_STREAM, 0); // Creating socket descriptor
-    int status;
-    status = bind(socket1, (struct sockaddr*)&address, sizeof(struct sockaddr_in)); // Binding socket to address
+    int socket1 = createSocket(AF_INET, SOCK_STREAM, 0); // Initalizing socket
+    int status; // This willbe used to determine the status of the socket functions
 
+    status = bind(socket1, (struct sockaddr*)&address, sizeof(struct sockaddr_in)); // Binding socket to address
     if (status == -1) {
         printf("bind() call failed.");
     }
@@ -30,6 +30,14 @@ int main(int argc, char * const argv[]) {
     status = listen(socket1, 5);    // Listening to the socket, setting queue length of 5
     if (status == -1) {
         printf("listen() call failed.");
+    }
+
+    int socket2 = accept(socket1, NULL, NULL); // Attempting to accept the connection from a web browser
+    if (socket2 == -1) {
+        printf("Failed to accept a connection.");
+    }
+    else {
+        printf("Connection succussful!\n");
     }
 
     printf("main reached the end\n");
