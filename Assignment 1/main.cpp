@@ -68,21 +68,24 @@ int main(int argc, char * const argv[]) {
 
     struct sockaddr_in serverAddress;
     // Getting the information we need about the host we are trying to connect to
-    struct hostent *server = gethostbyname("pages.cpsc.ucalgary.ca/~carey/CPSC441/checklist.txt");
+    struct hostent *server;
+    server = gethostbyname("pages.cpsc.ucalgary.ca"); // Will change this to be more dynamic because this set up will only work with this one web site
     if (server == NULL) {
         printf("ERROR, no such host.\n");
     }
 
-    bzero((char *) &serverAddress, sizeof(serverAddress));
+    // Setting up address for the web server
+    memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, (char *)&serverAddress.sin_addr.s_addr, server->h_length);
+    memcpy(&serverAddress.sin_addr,  server->h_addr, server->h_length);
+    serverAddress.sin_port = htons(80);
     status = connect(webServerSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
     if (status == -1) {
         printf("Failed to connect to server.\n");
         return 1;
     }
     else {
-        printf("Connected to web server!");
+        printf("Connected to web server!\n");
     }
 
     printf("main reached the end\n");
