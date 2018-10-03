@@ -60,7 +60,7 @@ int main(int argc, char * const argv[]) {
     char header[4096];
     strncpy(header, recvMessage, 4096);
 
-
+    // Printing HTTP request header
     printf("Request Header: \n%s\n", header);
 
     // Preparing new socket to communcate with the web server
@@ -87,6 +87,22 @@ int main(int argc, char * const argv[]) {
     else {
         printf("Connected to web server!\n");
     }
+
+    // Sending HTTP header to the web server
+    count = send(webServerSocket, header, strlen(header), 0);
+
+    char response[4096]; // Declaring the response buffer
+
+    // Receiving the HTTP response
+    count = recv(webServerSocket, recvMessage, 4096, 0);
+    strncpy(response, recvMessage, 4096);
+
+    // Printing the HTTP response
+    printf("HTTP Response: \n%s\n", response);
+
+    // Sending HTTP Response to the client
+    count = send(dataSocket, response, strlen(response), 0);
+
 
     printf("main reached the end\n");
     return 0;
