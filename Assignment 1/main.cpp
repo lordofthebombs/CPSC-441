@@ -11,6 +11,7 @@
 #include <string>
 #include <string.h>
 #include <netdb.h>
+#include <strings.h>
 
 using namespace std;
 
@@ -45,7 +46,7 @@ int main(int argc, char * const argv[]) {
         return 1;
     }
     else {
-        printf("Connection succussful!\n");
+        printf("Connection from client accepted!\n");
     }
 
     // Declaring variables to be used with the snd() and recv() functions
@@ -64,8 +65,25 @@ int main(int argc, char * const argv[]) {
 
     // Preparing new socket to communcate with the web server
     int webServerSocket = createSocket(AF_INET, SOCK_STREAM, 0);
-    // Remove this late so that you can get any address by parsing the header
-    struct hostent *host = gethostbyname("pages.cpsc.ucalgary.ca");
+
+    struct sockaddr_in serverAddress;
+    // Getting the information we need about the host we are trying to connect to
+    struct hostent *server = gethostbyname("pages.cpsc.ucalgary.ca/~carey/CPSC441/checklist.txt");
+    if (server == NULL) {
+        printf("ERROR, no such host.\n");
+    }
+
+    bzero((char *) &serverAddress, sizeof(serverAddress));
+    serverAddress.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, (char *)&serverAddress.sin_addr.s_addr, server->h_length);
+    status = connect(webServerSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
+    if (status == -1) {
+        printf("Failed to connect to server.\n");
+        return 1;
+    }
+    else {
+        printf("Connected to web server!");
+    }
 
     printf("main reached the end\n");
     return 0;
@@ -88,13 +106,4 @@ int createSocket(int domain, int type, int protocol) {
         return newSocket;
     }
     return newSocket;
-}
-
-// This function will parse through the header and get the hostname and returns
-// the pointer to the array
-char *hostName(char header[]) {
-    char host;
-    char *hostPtr = &host;
-
-    return hostPtr;
 }
