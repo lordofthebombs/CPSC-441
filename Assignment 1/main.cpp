@@ -8,12 +8,16 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 #include <cstring>
+#include <string>
+#include <string.h>
+#include <netdb.h>
 
 using namespace std;
 
 // Function declarations
 sockaddr_in initSocketAddr(short family, u_short port, u_int ipAddr);
 int createSocket(int domain, int type, int protocol);
+char *hostName(char header[]);
 
 int main(int argc, char * const argv[]) {
     struct sockaddr_in address;
@@ -50,13 +54,18 @@ int main(int argc, char * const argv[]) {
     int count;
 
     // Receving HTTP request from the client
-    count = recv(dataSocket, recvMessage, 10000, 0);
-    char header[4096] =
-    printf("Request Header: \n%s\n", recvMessage);
+    count = recv(dataSocket, recvMessage, 4096, 0);
+
+    char header[4096];
+    strncpy(header, recvMessage, 4096);
+
+
+    printf("Request Header: \n%s\n", header);
 
     // Preparing new socket to communcate with the web server
     int webServerSocket = createSocket(AF_INET, SOCK_STREAM, 0);
-
+    // Remove this late so that you can get any address by parsing the header
+    struct hostent *host = gethostbyname("pages.cpsc.ucalgary.ca");
 
     printf("main reached the end\n");
     return 0;
@@ -79,4 +88,13 @@ int createSocket(int domain, int type, int protocol) {
         return newSocket;
     }
     return newSocket;
+}
+
+// This function will parse through the header and get the hostname and returns
+// the pointer to the array
+char *hostName(char header[]) {
+    char host;
+    char *hostPtr = &host;
+
+    return hostPtr;
 }
