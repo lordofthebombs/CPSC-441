@@ -18,7 +18,7 @@ using namespace std;
 // Function declarations
 sockaddr_in initSocketAddr(short family, u_short port, u_int ipAddr);
 int createSocket(int domain, int type, int protocol);
-char *hostName(char header[]);
+char *getName(char header[]);
 
 int main(int argc, char * const argv[]) {
     struct sockaddr_in address;
@@ -58,7 +58,7 @@ int main(int argc, char * const argv[]) {
     count = recv(dataSocket, recvMessage, 4096, 0);
 
     char header[4096];
-    strncpy(header, recvMessage, 4096);
+    strcpy(header, recvMessage);
 
     // Printing HTTP request header
     printf("Request Header: \n%s\n", header);
@@ -95,7 +95,7 @@ int main(int argc, char * const argv[]) {
 
     // Receiving the HTTP response
     count = recv(webServerSocket, recvMessage, 4096, 0);
-    strncpy(response, recvMessage, 4096);
+    strcpy(response, recvMessage);
 
     // Printing the HTTP response
     printf("HTTP Response: \n%s\n", response);
@@ -103,6 +103,7 @@ int main(int argc, char * const argv[]) {
     // Sending HTTP Response to the client
     count = send(dataSocket, response, strlen(response), 0);
 
+    getName(header);
 
     printf("main reached the end\n");
     return 0;
@@ -126,3 +127,21 @@ int createSocket(int domain, int type, int protocol) {
     }
     return newSocket;
 }
+
+// This will take the header and parse through it, returning a pointer to a
+// char array of the host name.
+/*char *getName(char header[]) {
+    printf("Stepped into getName.\n");
+    static char hostName[200]; // 200 is just an arbritrary size I picked
+    char *headerHostPtr = strstr(header, "Host: ");
+    headerHostPtr += 6; // This is to get directly to the host name by off setting it.
+    printf("%s", headerHostPtr);
+
+    string headerStr = headerHostPtr;
+
+    int seperator = headerStr.find_first_of("\n");
+
+    strncpy(hostName, headerHostPtr, seperator);
+
+    return hostName;
+    }*/
