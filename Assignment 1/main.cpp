@@ -18,7 +18,7 @@ using namespace std;
 // Function declarations
 sockaddr_in initSocketAddr(short family, u_short port, u_int ipAddr);
 int createSocket(int domain, int type, int protocol);
-char *getName(char header[]);
+//char *getName(char header[]);
 
 int main(int argc, char * const argv[]) {
     struct sockaddr_in address;
@@ -103,7 +103,7 @@ int main(int argc, char * const argv[]) {
     // Sending HTTP Response to the client
     count = send(dataSocket, response, strlen(response), 0);
 
-    getName(header);
+    //getName(header);  Not working properly at this moment
 
     printf("main reached the end\n");
     return 0;
