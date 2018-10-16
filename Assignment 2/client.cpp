@@ -46,7 +46,9 @@ int main(int argc, char * const argv[]) {
     cin.getline(message, sizeof(message));
 
     // Sending message from the user to the server
-    send(clientSocket, message, strlen(message), 0);
+    // The length of the sent message is the length of the string + 1 to include
+    // the null terminator since strlen() gets the number of chars except '\0'
+    send(clientSocket, message, strlen(message) + 1, 0);
 
 
     close(clientSocket);
