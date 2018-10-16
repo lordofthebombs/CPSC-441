@@ -1,3 +1,8 @@
+/*  Author: Bader Abdulwaseem
+    UCID: 30023849
+    Assignment 2
+*/
+
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
