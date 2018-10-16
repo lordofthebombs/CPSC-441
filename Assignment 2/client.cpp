@@ -7,6 +7,9 @@
 #include <cstring>
 #include <cstdio>
 #include <arpa/inet.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 140
 
 using namespace std;
 
@@ -31,7 +34,17 @@ int main(int argc, char * const argv[]) {
         cout << "Connected to the server!" << endl;
     }
 
+    // Getting input from the user
+    char message[BUFFER_SIZE];
+    cout << "Enter a message to the server." << endl;
 
+    cin.getline(message, sizeof(message));
+
+    // Sending message from the user to the server
+    send(clientSocket, message, strlen(message), 0);
+
+
+    close(clientSocket);
 
     return 0;
 }

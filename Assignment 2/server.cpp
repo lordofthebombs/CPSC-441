@@ -7,6 +7,9 @@
 #include <cstring>
 #include <cstdio>
 #include <arpa/inet.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 140
 
 using namespace std;
 
@@ -42,6 +45,21 @@ int main(int argc, char * const argv[]) {
     else {
         cout << "Connection accepted!" << endl;
     }
+
+    char cMessage[BUFFER_SIZE];
+    string message;
+
+    int byteCount = recv(dataSocket, cMessage, BUFFER_SIZE, 0);
+
+    // Adding null terminator because I guess cin.getLine() doesn't include it
+    cMessage[byteCount + 1] = '\0'
+
+    // Converting char array to string to make parsing "easier"
+    message = string(cMessage);
+    cout << message << endl;
+
+    close(dataSocket);
+    close(listeningSocket);
 
     return 0;
 }
