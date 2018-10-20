@@ -40,16 +40,47 @@ int main(int argc, char * const argv[]) {
     }
 
     // Getting input from the user
-    char message[BUFFER_SIZE];
-    cout << "Enter a message to the server." << endl;
+    char clientMessage[BUFFER_SIZE];
+    cout << "Choose which encoding scheme you want." << endl;
+    cout << "(1) Sequential\n(2) Wordsum\n(3) Bader's encryption\nOr, press (4) to exit." << endl;
 
-    cin.getline(message, sizeof(message));
+    // There will be 4 choices to choose from, each that will cause a different
+    // encryption method or to close the client. Currently all the options do
+    // the same thing.
 
-    // Sending message from the user to the server
-    // The length of the sent message is the length of the string + 1 to include
-    // the null terminator since strlen() gets the number of chars except '\0'
-    send(clientSocket, message, strlen(message) + 1, 0);
+    int choice;
+    while (1) {
+        scanf("%d", &choice);
 
+        if (choice == 1) {
+            cout << "\nEnter the message you wish to encode/decode." << endl;
+            cin.getline(clientMessage, sizeof(clientMessage));
+        }
+
+        else if (choice == 2) {
+            cout << "\nEnter the message you wish to encode/decode." << endl;
+            cin.getline(clientMessage, sizeof(clientMessage));
+        }
+
+        else if (choice == 3) {
+            cout << "\nEnter the message you wish to encode/decode." << endl;
+            cin.getline(clientMessage, sizeof(clientMessage));
+        }
+
+        else if (choice == 4) {
+            break;
+        }
+
+        else {
+            cout << "Please enter a valid option!" << endl;
+        }
+
+        // Sending message from the user to the server
+        // The length of the sent message is the length of the string + 1 to include
+        // the null terminator since strlen() gets the number of chars except '\0'
+        send(clientSocket, clientMessage, strlen(clientMessage) + 1, 0);
+
+    }
 
     close(clientSocket);
 

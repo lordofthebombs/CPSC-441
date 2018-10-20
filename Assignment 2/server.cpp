@@ -54,12 +54,14 @@ int main(int argc, char * const argv[]) {
     char cMessage[BUFFER_SIZE];
     string message;
 
+    // Infinitely looping, receiving messages from client
+    while (1) {
     int byteCount = recv(dataSocket, cMessage, BUFFER_SIZE, 0);
 
     // Converting char array to string to make parsing "easier"
     message = string(cMessage);
     cout << message << endl;
-
+    }
     close(dataSocket);
     close(listeningSocket);
 
