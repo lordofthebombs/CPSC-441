@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <sstream>
 
 #define BUFFER_SIZE 140
 
@@ -21,6 +22,10 @@ using namespace std;
 // Function declarations
 sockaddr_in initSocketAddr(short family, u_short port, u_int ipAddr);
 int createSocket(int domain, int type, int protocol);
+vector<string> stringSplit(string str, char delim);
+map<int, string> sequentialIndex(map<int, string>, vector<string> words);
+string seqDecode(string index, map<int, string> m);
+string seqEncode(map<int, string> m);
 
 int main(int argc, char * const argv[]) {
 
@@ -54,14 +59,39 @@ int main(int argc, char * const argv[]) {
     char cMessage[BUFFER_SIZE];
     string message;
 
+    // Declaring the maps to be used in the encryptions
+
+    map<int, string> seqMap;
+    map<int, string> sumMap;
+    map<int, string> otherMap;
+
     // Infinitely looping, receiving messages from client
     while (1) {
-    int byteCount = recv(dataSocket, cMessage, BUFFER_SIZE, 0);
+        int byteCount = recv(dataSocket, cMessage, BUFFER_SIZE, 0);
 
-    // Converting char array to string to make parsing "easier"
-    message = string(cMessage);
-    cout << message << endl;
+        // Converting char array to string to make parsing "easier"
+        message = string(cMessage);
+        cout << message << endl;
+
+        // Splitting the string into individual words
+        vector<string> words = stringSplit(message, ' ');
+
+        seqMap = sequentialIndex(seqMap, words);
+
+        // If the message starts with a 0, we can assume the client is sending
+        // an encoded message and wants to decode it. The encoded words are
+        // Simply going to be stored in the words vector and shouldn't affect
+        // anything else in the program.
+        if (cMessage[0] == '0') {
+            message = "";
+            for (int i = 0; i < words.size(); i++) {
+                message += seqDecode(words[i], seqMap) + " ";
+            }
+        }
+
+        byteCount = send(dataSocket, message.c_str(), sizeof(message.c_str()) + 1, 0);
     }
+
     close(dataSocket);
     close(listeningSocket);
 
@@ -85,4 +115,40 @@ int createSocket(int domain, int type, int protocol) {
         return newSocket;
     }
     return newSocket;
+}
+
+// Function taken from conrjac from GitHub.com
+// Modifed slightly by me
+// https://gist.github.com/conrjac/5387376
+vector<string> stringSplit(string str, char delim) {
+	istringstream ss(str);
+	string token;
+	vector<string> words;
+
+	while(getline(ss, token, delim)) {
+		words.push_back(token);
+	}
+
+    return words;
+}
+
+// This function takes in a map and a vector of strings as input, and maps each
+// string into its own place sequentially
+map<int, string> sequentialIndex(map<int, string> m, vector<string> words) {
+    for (int i = m.size(); i < words.size(); i++) {
+        m[i] = words[i];
+    }
+    return m;
+}
+
+// Returns string mapped at index. It does this by stripping the 0x off of the
+// number and gives it just a number
+string seqDecode(string index, map<int, string> m) {
+    int i = stoi(index.substr(2, index.size()));
+    return m[i];
+}
+
+// Encodes each string with its index
+string seqEncode(map<int, string> m) {
+    return "";
 }
