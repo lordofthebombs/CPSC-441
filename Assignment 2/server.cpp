@@ -88,9 +88,11 @@ int main(int argc, char * const argv[]) {
                 message += seqDecode(words[i], seqMap) + " ";
             }
         }
-
-        byteCount = send(dataSocket, message.c_str(), sizeof(message.c_str()) + 1, 0);
+        strcpy(cMessage, message.c_str());
+        byteCount = send(dataSocket, cMessage, sizeof(cMessage) + 1, 0);
     }
+
+
 
     close(dataSocket);
     close(listeningSocket);
