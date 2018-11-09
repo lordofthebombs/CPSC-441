@@ -1,12 +1,18 @@
+// Author: Bader Abdulwaseem
+// UCID: 30023849
+// Assignment 3
+// Compilation instructions:
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <string>
 #include <queue>
+#include <cstdio>
 
-
-#define BUFFER_SIZE 100
+// Defining macros for constants
+#define BUFFER_SIZE_DEFAULT 100
 #define START 0.0
 
 using namespace std;
@@ -32,42 +38,74 @@ struct qosData {
     double delay = 0.0;
     int packetsLost = 0;
     double packetLoss;
-} data;
+	double averageDelay;
+};
 
 int main(int argc, char * argv[]) {
-    // Simulating a buffer by representing it as the amount of elements a it has
-    vector<int> queue;
-
-    double arrivalTime = START;
+    // This queue will contain the arrival times of the packets and their sizes
+    queue<vector<double>> buffer;
+	int bufferSize = BUFFER_SIZE_DEFAULT;
+	qosData qos;
+    // double arrivalTime = START;
     // Delay = arrival time of current packet - previous packet's transmission time
     double delayTime = 0.0;
     // Transmission time = packet size / transmission speed
-    double transmisionTime START;
-    double transmissionSpeed = 11000000.0;
-    int packetSize;
+    double departureTime = START;
+	double currentTime = START;
+	// The transmission speed is in MBps, just so I dont have to multiple the
+	// packet size by 8 everytime
+    double transmissionSpeed = 1375000.0;
+    // double packetSize;
     long int packets = 0;
 
-    // Each line will be split into two pairs of
-    vector<string> pair;
+    // Each line will be split into a pair, where pair[0] is the arrival time
+	// and pair[1] is the packet size
+    vector<string> pairStr;
+	// pairDouble will be pushed into the queue
+	vector<double> pairDouble;
     ifstream inputFile;
-    inputFile.open("soccersmall.txt");
+    inputFile.open("soccer.txt");
 
+	int pushCount = 0;
     string line;
-
     if (inputFile.is_open()) {
         while (getline(inputFile, line)) {
-            packet++;   // Incrementing to count total number of packets
-            pair = stringSplit(line, " ");
-            arrivalTime = stod(pair[0]);
-            packetSize = stoi(pair[1]) * 8; // Multiplying by 8 to count the number of bits
+            packets++;   // Incrementing to count total number of packets
+            pairStr = stringSplit(line, ' ');
+			pairDouble.push_back(stod(pairStr[0]));
+			pairDouble.push_back(stod(pairStr[1]));
 
-            /*
-                Add these ideas later:
-                If arrivalTime < transmisionTime
-                push size of packet to the queue
-                if queue is full, i.e. queue size is BUFFER_SIZE, drop the packet
-                when the current packet is done transmitting, continue with the next one
-            */
+
+			// If a packet arrives before the current one is finished transmitting
+			// add it to the queue
+			if (pairDouble[0] < currentTime) {
+				buffer.push(pairDouble);
+				delayTime = currentTime - pairDouble[0];
+				cout << "Pushed\n";
+				pushCount++;
+			}
+
+			if (buffer.size() == bufferSize) {
+				// Drop packet
+				qos.packetsLost++;
+			}
+
+			else if (buffer.size() == 0) {
+				buffer.push(pairDouble);
+				delayTime = 0.0;
+				departureTime = buffer.front()[1] / transmissionSpeed;
+				currentTime += departureTime;
+				buffer.pop();
+			}
+
+			else if (buffer.size() > 0 || buffer.size() < 100) {
+				
+			}
+
+			// Clearing the pair
+			pairDouble.pop_back();
+			pairDouble.pop_back();
+		}
     }
 
     else {
@@ -76,5 +114,10 @@ int main(int argc, char * argv[]) {
 
     inputFile.close();
 
+	qos.packetLoss = 100.0 - ((double)qos.packetsLost / (double)packets * 100.0);
+	qos.averageDelay = qos.delay / packets;
+	cout << "Packet loss: " << qos.packetLoss << "%" << endl;
+	cout << "Average delay: " << qos.averageDelay << endl;
+	cout << pushCount << endl;
     return 0;
 }
