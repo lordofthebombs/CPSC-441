@@ -38,7 +38,7 @@ struct qosData {
     double delay = 0.0;
     int packetsLost = 0;
     double packetLoss;
-	double averageDelay;
+		double averageDelay;
 };
 
 int main(int argc, char * argv[]) {
@@ -81,8 +81,6 @@ int main(int argc, char * argv[]) {
 			if (pairDouble[0] < currentTime) {
 				buffer.push(pairDouble);
 				delayTime = currentTime - pairDouble[0];
-				cout << "Pushed\n";
-				pushCount++;
 			}
 
 			if (buffer.size() == bufferSize) {
@@ -99,7 +97,11 @@ int main(int argc, char * argv[]) {
 			}
 
 			else if (buffer.size() > 0 || buffer.size() < 100) {
-				
+				buffer.push(pairDouble);
+				departureTime = (buffer.front()[1] / transmissionSpeed) + delayTime;
+				currentTime += departureTime;
+				qos.delay += delayTime;
+				buffer.pop();
 			}
 
 			// Clearing the pair
@@ -114,7 +116,7 @@ int main(int argc, char * argv[]) {
 
     inputFile.close();
 
-	qos.packetLoss = 100.0 - ((double)qos.packetsLost / (double)packets * 100.0);
+	qos.packetLoss = (double)qos.packetsLost / (double)packets * 100.0;
 	qos.averageDelay = qos.delay / packets;
 	cout << "Packet loss: " << qos.packetLoss << "%" << endl;
 	cout << "Average delay: " << qos.averageDelay << endl;
