@@ -37,6 +37,7 @@ vector<string> stringSplit(string str, char delim) {
 struct qosData {
     double delay = 0.0;
     int packetsLost = 0;
+	int incomingPackets;
     double packetLoss;
 	double averageDelay;
 };
@@ -57,7 +58,7 @@ int main(int argc, char * argv[]) {
 	// packet size by 8 everytime
     double transmissionSpeed = 1375000.0;
     // double packetSize;
-    long int packets = 0;
+    int packets = 0;
 
     // Each line will be split into a pair, where pair[0] is the arrival time
 	// and pair[1] is the packet size
@@ -123,6 +124,7 @@ int main(int argc, char * argv[]) {
 
 	qos11Mbps.packetLoss = ((double)qos11Mbps.packetsLost / (double)packets) * 100.0;
 	qos11Mbps.averageDelay = qos11Mbps.delay / (double)packets;
+	qos11Mbps.incomingPackets = packets;
 
 	// 6 Mbps in bytes per second
 	transmissionSpeed = 750000.0;
@@ -185,6 +187,7 @@ int main(int argc, char * argv[]) {
 
 	qos6Mbps.packetLoss = ((double)qos6Mbps.packetsLost / (double)packets) * 100.0;
 	qos6Mbps.averageDelay = qos6Mbps.delay / (double)packets;
+	qos6Mbps.incomingPackets = packets;
 
 
 	transmissionSpeed = 6750000.0;
@@ -247,6 +250,7 @@ int main(int argc, char * argv[]) {
 
 	qos54Mbps.packetLoss = ((double)qos54Mbps.packetsLost / (double)packets) * 100.0;
 	qos54Mbps.averageDelay = qos54Mbps.delay / (double)packets;
+	qos54Mbps.incomingPackets = packets;
 
 
 	transmissionSpeed = 3750000.0;
@@ -309,14 +313,15 @@ int main(int argc, char * argv[]) {
 
 	qos30Mbps.packetLoss = ((double)qos30Mbps.packetsLost / (double)packets) * 100.0;
 	qos30Mbps.averageDelay = qos30Mbps.delay / (double)packets;
+	qos30Mbps.incomingPackets = packets;
+
+	// Printing out a table of all the values
+	cout << "|Speed in Mbps|\t|Sent packets|\t|Lost packets|\t|Packets received|\t|Average packet loss|\t|Average queuing delay|" << endl;
+	cout << " 11\t\t "<< qos11Mbps.incomingPackets << " \t0\t\t " << qos11Mbps.incomingPackets << "  \t\t" << qos11Mbps.packetLoss << "%\t\t\t " << qos11Mbps.averageDelay * 1000 << " ms" << endl;
+	cout << " 6 \t\t "<< qos6Mbps.incomingPackets << " \t0\t\t " << qos6Mbps.incomingPackets << "  \t\t" << qos6Mbps.packetLoss << "%\t\t\t " << qos6Mbps.averageDelay * 1000 << " ms" << endl;
+	cout << " 54\t\t "<< qos54Mbps.incomingPackets << " \t0\t\t " << qos54Mbps.incomingPackets << "  \t\t" << qos54Mbps.packetLoss << "%\t\t\t " << qos54Mbps.averageDelay * 1000 << " ms" << endl;
+	cout << " 30\t\t "<< qos30Mbps.incomingPackets << " \t0\t\t " << qos30Mbps.incomingPackets << "  \t\t" << qos30Mbps.packetLoss << "%\t\t\t " << qos30Mbps.averageDelay * 1000 << " ms" << endl;
 
 
-	cout << "|Speed in Mbps|\t|Average packet loss|\t|Average queuing delay|" << endl;
-	cout << " 11\t\t " << qos11Mbps.packetLoss << "%\t\t\t " << qos11Mbps.averageDelay * 1000 << " ms" << endl;
-	cout << " 6\t\t " << qos6Mbps.packetLoss << "%\t\t\t " << qos6Mbps.averageDelay * 1000 << " ms"  <<endl;
-	cout << " 54\t\t " << qos54Mbps.packetLoss << "%\t\t\t " << qos54Mbps.averageDelay * 1000 << " ms" << endl;
-	cout << " 30\t\t " << qos30Mbps.packetLoss << "%\t\t\t " << qos30Mbps.averageDelay * 1000 << " ms" << endl;
-
-
-    return 0;
+    return 0;cout << " 6\t\t " << qos6Mbps.packetLoss << "%\t\t\t " << qos6Mbps.averageDelay * 1000 << " ms"  <<endl;
 }
